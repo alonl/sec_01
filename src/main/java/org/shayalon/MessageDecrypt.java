@@ -13,7 +13,7 @@ public class MessageDecrypt {
             Configuration configuration = Configuration.fromXml(XmlTools.readFile(configPath));
             boolean isSignatureVerified = EncTools.decryptAndVerifySignature(configuration);
             if (isSignatureVerified) {
-                System.out.println("Done!");
+                System.out.println("File decrypted SUCCESSFULLY.");
             } else {
                 System.out.println("ERROR: INVALID SIGNATURE");
             }
