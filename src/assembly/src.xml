@@ -8,7 +8,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <outputDirectory>/target</outputDirectory>
+            <outputDirectory>target</outputDirectory>
         </fileSet>
     </fileSets>
     <dependencySets>
