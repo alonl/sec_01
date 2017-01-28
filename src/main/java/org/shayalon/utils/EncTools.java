@@ -16,9 +16,9 @@ import static org.shayalon.config.AppConfig.*;
 
 public class EncTools {
 
-    public Configuration encryptAndSign() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, CertificateException, KeyStoreException, IOException, UnrecoverableEntryException, NoSuchProviderException, SignatureException, BadPaddingException, IllegalBlockSizeException, TransformerException, ParserConfigurationException {
-        SecretKey secretKey = createEncryptionKey(cryptAlgo, cryptAlgoKeySize);
-        Cipher cipher = createCipher(symmetricCipherAlgo, Cipher.ENCRYPT_MODE, secretKey);
+    public static Configuration encryptAndSign() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, CertificateException, KeyStoreException, IOException, UnrecoverableEntryException, NoSuchProviderException, SignatureException, BadPaddingException, IllegalBlockSizeException, TransformerException, ParserConfigurationException {
+        SecretKey secretKey = generateSecretKey(cryptAlgo, cryptAlgoKeySize);
+        Cipher cipher = createEncryptionCipher(symmetricCipherAlgo, Cipher.ENCRYPT_MODE, secretKey);
         KeyStore keyStore = getKeystore(keystorePath, keystorePassword);
         PrivateKey privateKey = getPrivateKeyFromKeystore(keyStore, encryptPrivateKeyAlias, encryptPrivateKeyPassword);
         Signature signature = createSignature(signatureAlgo, signatureProvider);
@@ -33,7 +33,7 @@ public class EncTools {
         return new Configuration(fileSignature, encryptedSecretKey, encryptedIv);
     }
 
-    public boolean decryptAndVerifySignature(Configuration configuration) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableEntryException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    public static boolean decryptAndVerifySignature(Configuration configuration) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableEntryException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException, NoSuchProviderException, InvalidAlgorithmParameterException {
         byte[] signatureBuffer = configuration.getSignature();
         byte[] encryptedSecretKey = configuration.getEncryptedSecretKey();
         byte[] encryptedIv = configuration.getEncryptedIv();
@@ -58,35 +58,35 @@ public class EncTools {
         return isSignatureVerified;
     }
 
-    private PrivateKey getPrivateKeyFromKeystore(KeyStore keyStore, String keyAlias, String keyPassword) throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException {
+    private static PrivateKey getPrivateKeyFromKeystore(KeyStore keyStore, String keyAlias, String keyPassword) throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException {
         KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry)
                 keyStore.getEntry(keyAlias, new KeyStore.PasswordProtection(keyPassword.toCharArray()));
         return pkEntry.getPrivateKey();
     }
 
-    private PublicKey getPublicKeyFromKeystore(KeyStore keyStore, String keyAlias) throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException {
+    private static PublicKey getPublicKeyFromKeystore(KeyStore keyStore, String keyAlias) throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException {
         return keyStore.getCertificate(keyAlias).getPublicKey();
     }
 
-    private SecretKey createEncryptionKey(String cryptAlgo, int cryptAlgoKeySize) throws NoSuchAlgorithmException {
+    private static SecretKey generateSecretKey(String cryptAlgo, int cryptAlgoKeySize) throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance(cryptAlgo);
         keyGen.init(cryptAlgoKeySize);
         return keyGen.generateKey();
     }
 
-    private Cipher createCipher(String cipherAlgo, int mode, SecretKey secretKey) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
+    private static Cipher createEncryptionCipher(String cipherAlgo, int mode, SecretKey secretKey) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
         Cipher cipher = Cipher.getInstance(cipherAlgo);
         cipher.init(mode, secretKey);
         return cipher;
     }
 
-    private Cipher createDecryptCipher(String cipherAlgo, int mode, SecretKey secretKey, byte[] iv) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    private static Cipher createDecryptCipher(String cipherAlgo, int mode, SecretKey secretKey, byte[] iv) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         Cipher cipher = Cipher.getInstance(cipherAlgo);
         cipher.init(mode, secretKey, new IvParameterSpec(iv));
         return cipher;
     }
 
-    private KeyStore getKeystore(String keystoreName, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
+    private static KeyStore getKeystore(String keystoreName, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
         KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
         char[] password = keystorePassword.toCharArray();
         java.io.FileInputStream keystoreFis = null;
@@ -101,11 +101,11 @@ public class EncTools {
         return ks;
     }
 
-    private Signature createSignature(String signatureAlgo, String provider) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeyException {
+    private static Signature createSignature(String signatureAlgo, String provider) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidKeyException {
         return Signature.getInstance(signatureAlgo, provider);
     }
 
-    private void encryptAndSignFile(Cipher cipher, Signature signature, String inputPath, String outputPath) throws SignatureException, IOException {
+    private static void encryptAndSignFile(Cipher cipher, Signature signature, String inputPath, String outputPath) throws SignatureException, IOException {
         BufferedInputStream inputStream = null;
         CipherOutputStream cipherOutputStream = null;
         try {
@@ -127,7 +127,7 @@ public class EncTools {
         }
     }
 
-    private void decryptFile(Cipher cipher, Signature signature, String inputPath, String outputPath) throws SignatureException, IOException {
+    private static void decryptFile(Cipher cipher, Signature signature, String inputPath, String outputPath) throws SignatureException, IOException {
         CipherInputStream cipherInputStream = null;
         BufferedOutputStream bufferedOutputStream = null;
         try {
@@ -149,13 +149,13 @@ public class EncTools {
         }
     }
 
-    private byte[] encryptBuffer(String cipherAlgo, PublicKey publicKey, byte[] buffer) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
+    private static byte[] encryptBuffer(String cipherAlgo, PublicKey publicKey, byte[] buffer) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance(cipherAlgo);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         return cipher.doFinal(buffer);
     }
 
-    private byte[] decryptBuffer(String cipherAlgo, PrivateKey privateKey, byte[] encryptedSecretKey) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
+    private static byte[] decryptBuffer(String cipherAlgo, PrivateKey privateKey, byte[] encryptedSecretKey) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance(cipherAlgo);
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         return cipher.doFinal(encryptedSecretKey);

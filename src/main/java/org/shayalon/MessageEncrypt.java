@@ -16,7 +16,7 @@ import java.security.cert.CertificateException;
 public class MessageEncrypt {
     public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, KeyStoreException, CertificateException, UnrecoverableEntryException, NoSuchProviderException {
         try {
-            Configuration configuration = new EncTools().encryptAndSign();
+            Configuration configuration = EncTools.encryptAndSign();
             XmlTools.writeFile(configuration.toXml(), "config.xml");
         } catch (SignatureException | TransformerException | ParserConfigurationException e) {
             e.printStackTrace();

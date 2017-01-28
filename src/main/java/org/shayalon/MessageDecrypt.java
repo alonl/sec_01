@@ -19,7 +19,7 @@ public class MessageDecrypt {
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, TransformerException {
         Configuration configuration = Configuration.fromXml(XmlTools.readFile("config.xml"));
         try {
-            new EncTools().decryptAndVerifySignature(configuration);
+            EncTools.decryptAndVerifySignature(configuration);
         } catch (CertificateException | NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | NoSuchPaddingException | NoSuchProviderException | SignatureException | InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
