@@ -1,5 +1,7 @@
 package org.shayalon.utils;
 
+import org.shayalon.models.Configuration;
+
 import javax.crypto.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -9,14 +11,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.*;
+import java.util.Base64;
 
 
 public class EncTools {
 
-    public void encryptAndSign() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, CertificateException, KeyStoreException, IOException, UnrecoverableEntryException, NoSuchProviderException, SignatureException, BadPaddingException, IllegalBlockSizeException, TransformerException, ParserConfigurationException {
+    public Configuration encryptAndSign() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, CertificateException, KeyStoreException, IOException, UnrecoverableEntryException, NoSuchProviderException, SignatureException, BadPaddingException, IllegalBlockSizeException, TransformerException, ParserConfigurationException {
 
-        String clearTextFile = "plaintext.txt";
-        String cipherTextFile = "plaintext.txt.enc";
+        String clearTextFile = "input/plaintext.txt";
+        String cipherTextFile = "output/plaintext.txt.enc";
         String configurationFile = "config.xml";
 
         String cryptAlgo = "AES";
@@ -41,9 +44,9 @@ public class EncTools {
 
         PublicKey publicKey = getPublicKeyFromKeystore(keyStore, publicKeyAlias);
 
-        byte[] encryptedCipherKey = encryptSecretKey(asymmetricCipherAlgo, publicKey, secretKey);
+        byte[] encryptedSecretKey = encryptSecretKey(asymmetricCipherAlgo, publicKey, secretKey);
         byte[] fileSignature = signature.sign();
-        createConfigurationFile(configurationFile, encryptedCipherKey, fileSignature);
+        return new Configuration(fileSignature, encryptedSecretKey);
     }
 
     private PrivateKey getPrivateKeyFromKeystore(KeyStore keyStore, String keyAlias, String keyPassword) throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException {
@@ -125,8 +128,4 @@ public class EncTools {
         return cipher.doFinal(secretKey.getEncoded());
     }
 
-
-    private void createConfigurationFile(String outputFile, byte[] encryptedSecretKey, byte[] fileSignature) throws TransformerException, ParserConfigurationException {
-        XmlTools.writeConfigurationFile(outputFile, new String(encryptedSecretKey), new String(fileSignature));
-    }
 }

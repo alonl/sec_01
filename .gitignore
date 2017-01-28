@@ -41,7 +41,8 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-# Keys
+# project
+input/
+output/
 keys/
-
 target/

@@ -1,6 +1,8 @@
 package org.shayalon;
 
+import org.shayalon.models.Configuration;
 import org.shayalon.utils.EncTools;
+import org.shayalon.utils.XmlTools;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -14,12 +16,9 @@ import java.security.cert.CertificateException;
 public class App {
     public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, KeyStoreException, CertificateException, UnrecoverableEntryException, NoSuchProviderException {
         try {
-            new EncTools().encryptAndSign();
-        } catch (SignatureException e) {
-            e.printStackTrace();
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
+            Configuration configuration = new EncTools().encryptAndSign();
+            XmlTools.writeFile(configuration.toXml(), "config2.xml");
+        } catch (SignatureException | TransformerException | ParserConfigurationException e) {
             e.printStackTrace();
         }
     }
