@@ -13,11 +13,13 @@ import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
 
+import static org.shayalon.config.AppConfig.configPath;
+
 public class MessageEncrypt {
     public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, KeyStoreException, CertificateException, UnrecoverableEntryException, NoSuchProviderException {
         try {
             Configuration configuration = EncTools.encryptAndSign();
-            XmlTools.writeFile(configuration.toXml(), "config.xml");
+            XmlTools.writeFile(configuration.toXml(), configPath);
         } catch (SignatureException | TransformerException | ParserConfigurationException e) {
             e.printStackTrace();
         }

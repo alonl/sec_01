@@ -19,6 +19,8 @@ public class AppConfig {
     public static final String keystorePath = keystoreConfig.getString("path");
     public static final String keystorePassword = keystoreConfig.getString("password");
 
+    private static final Config configConfig = config.getConfig("config");
+    public static final String configPath = configConfig.getString("path");
 
     private static final Config encryptConfig = config.getConfig("encrypt");
     public static final String plainTextFile = encryptConfig.getString("plainTextFile");

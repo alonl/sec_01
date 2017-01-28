@@ -47,15 +47,20 @@ public class EncTools {
         SecretKey secretKey = new SecretKeySpec(decryptedSecretKeyBuffer, cryptAlgo);
         Cipher cipher = createDecryptCipher(symmetricCipherAlgo, Cipher.DECRYPT_MODE, secretKey, decryptedIv);
 
-
         PublicKey publicKey = getPublicKeyFromKeystore(keyStore, decryptPublicKeyAlias);
         Signature signature = createSignature(signatureAlgo, signatureProvider);
         signature.initVerify(publicKey);
 
-        decryptFile(cipher, signature, encryptedFile, decryptOutputFile);
-        boolean isSignatureVerified = signature.verify(signatureBuffer);
-        System.out.println("Signature verified? " + isSignatureVerified);
-        return isSignatureVerified;
+        boolean isSignatureVerified = verifySignature(cipher, signature, signatureBuffer, encryptedFile);
+        if (!isSignatureVerified) {
+            try (PrintWriter out = new PrintWriter(decryptOutputFile)) {
+                out.println("ERROR: INVALID SIGNATURE");
+            }
+            return false;
+        }
+
+        decryptFile(cipher, encryptedFile, decryptOutputFile);
+        return true;
     }
 
     private static PrivateKey getPrivateKeyFromKeystore(KeyStore keyStore, String keyAlias, String keyPassword) throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException {
@@ -127,7 +132,24 @@ public class EncTools {
         }
     }
 
-    private static void decryptFile(Cipher cipher, Signature signature, String inputPath, String outputPath) throws SignatureException, IOException {
+    private static boolean verifySignature(Cipher cipher, Signature signature, byte[] signatureBuffer, String inputPath) throws SignatureException, IOException {
+        CipherInputStream cipherInputStream = null;
+        try {
+            cipherInputStream = new CipherInputStream(new FileInputStream(inputPath), cipher);
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = cipherInputStream.read(buffer)) >= 0) {
+                signature.update(buffer, 0, len);
+            }
+        } finally {
+            if (cipherInputStream != null) {
+                cipherInputStream.close();
+            }
+        }
+        return signature.verify(signatureBuffer);
+    }
+
+    private static void decryptFile(Cipher cipher, String inputPath, String outputPath) throws SignatureException, IOException {
         CipherInputStream cipherInputStream = null;
         BufferedOutputStream bufferedOutputStream = null;
         try {
@@ -136,7 +158,6 @@ public class EncTools {
             byte[] buffer = new byte[1024];
             int len;
             while ((len = cipherInputStream.read(buffer)) >= 0) {
-                signature.update(buffer, 0, len);
                 bufferedOutputStream.write(buffer, 0, len);
             }
         } finally {
