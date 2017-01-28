@@ -16,8 +16,8 @@ public class EncTools {
 
     public Configuration encryptAndSign() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, CertificateException, KeyStoreException, IOException, UnrecoverableEntryException, NoSuchProviderException, SignatureException, BadPaddingException, IllegalBlockSizeException, TransformerException, ParserConfigurationException {
 
-        String clearTextFile = "input/plaintext.txt";
-        String cipherTextFile = "output/plaintext.txt.enc";
+        String clearTextFile = "plaintext.txt";
+        String cipherTextFile = "encrypted.txt";
 
         String cryptAlgo = "AES";
         String signatureAlgo = "SHA1withRSA";
@@ -50,8 +50,8 @@ public class EncTools {
 
     public boolean decryptAndVerifySignature(Configuration configuration) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableEntryException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException, NoSuchProviderException, InvalidAlgorithmParameterException {
 
-        String cipherTextFile = "output/plaintext.txt.enc";
-        String clearTextFile = "output/plaintext.txt";
+        String cipherTextFile = "encrypted.txt";
+        String clearTextFile = "decrypted.txt";
 
         String cryptAlgo = "AES";
         String signatureAlgo = "SHA1withRSA";

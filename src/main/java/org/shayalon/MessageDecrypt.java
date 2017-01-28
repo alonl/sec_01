@@ -17,7 +17,7 @@ import java.security.cert.CertificateException;
 public class MessageDecrypt {
 
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException, TransformerException {
-        Configuration configuration = Configuration.fromXml(XmlTools.readFile("output/config.xml"));
+        Configuration configuration = Configuration.fromXml(XmlTools.readFile("config.xml"));
         try {
             new EncTools().decryptAndVerifySignature(configuration);
         } catch (CertificateException | NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | NoSuchPaddingException | NoSuchProviderException | SignatureException | InvalidAlgorithmParameterException e) {

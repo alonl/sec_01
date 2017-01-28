@@ -41,8 +41,12 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-# project
-input/
-output/
-keys/
+# target
 target/
+
+# project
+/plaintext.txt
+/encrypted.txt
+/decrypted.txt
+/config.xml
+/keys/
