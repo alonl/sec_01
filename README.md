@@ -1,9 +1,12 @@
-Main(string privateKeyStorePassword, string publicKeyStorePassword, string fileToEncryptPath, string encryptFilePath)
+# TODO
 
-CreateEncryptionKey()
+* Application params:
+    - KeyStore password
+    - Algorithms
+    - Crypto Providers
+    - Comments
+    
 
-CreateEncryptedFile(string fileToEncryptPath, string encryptFilePathstring, encryptionKey)
+* First validate signature, then output decrypted file (otherwise print an error)
 
-CreateSignature(string privateKeyStorePassword, string fileToEncryptPath)
-
-CreateConfigurationFile(string encryptionKey, string signature)
+* 
