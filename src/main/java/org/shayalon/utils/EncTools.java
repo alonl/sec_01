@@ -42,9 +42,10 @@ public class EncTools {
 
         PublicKey publicKey = getPublicKeyFromKeystore(keyStore, publicKeyAlias);
 
-        byte[] encryptedSecretKey = encryptBuffer(asymmetricCipherAlgo, publicKey, secretKey.getEncoded());
         byte[] fileSignature = signature.sign();
-        return new Configuration(fileSignature, encryptedSecretKey, cipher.getIV());
+        byte[] encryptedSecretKey = encryptBuffer(asymmetricCipherAlgo, publicKey, secretKey.getEncoded());
+        byte[] encryptedIv = encryptBuffer(asymmetricCipherAlgo, publicKey, cipher.getIV());
+        return new Configuration(fileSignature, encryptedSecretKey, encryptedIv);
     }
 
     public boolean decryptAndVerifySignature(Configuration configuration) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableEntryException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException, SignatureException, NoSuchProviderException, InvalidAlgorithmParameterException {
@@ -66,14 +67,17 @@ public class EncTools {
 
         byte[] signatureBuffer = configuration.getSignature();
         byte[] encryptedSecretKey = configuration.getEncryptedSecretKey();
-        byte[] iv = configuration.getEncryptedIv();
+        byte[] encryptedIv = configuration.getEncryptedIv();
 
         KeyStore keyStore = getKeystore(keystoreName, keystorePassword);
         PrivateKey privateKey = getPrivateKeyFromKeystore(keyStore, keyAlias, keyPassword);
 
         byte[] decryptedSecretKeyBuffer = decryptBuffer(asymmetricCipherAlgo, privateKey, encryptedSecretKey);
+        byte[] decryptedIv = decryptBuffer(asymmetricCipherAlgo, privateKey, encryptedIv);
+
         SecretKey secretKey = new SecretKeySpec(decryptedSecretKeyBuffer, cryptAlgo);
-        Cipher cipher = createDecryptCipher(symmetricCipherAlgo, Cipher.DECRYPT_MODE, secretKey, iv);
+        Cipher cipher = createDecryptCipher(symmetricCipherAlgo, Cipher.DECRYPT_MODE, secretKey, decryptedIv);
+
 
         PublicKey publicKey = getPublicKeyFromKeystore(keyStore, publicKeyAlias);
         Signature signature = createSignature(signatureAlgo, signatureProvider);
