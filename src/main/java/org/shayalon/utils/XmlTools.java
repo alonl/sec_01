@@ -1,7 +1,6 @@
 package org.shayalon.utils;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -28,13 +27,14 @@ public class XmlTools {
         StreamResult result = new StreamResult(new File(outputFile));
 
         transformer.transform(source, result);
-        System.out.println("File saved!");
+        System.out.println("XML file saved.");
     }
 
     public static Document readFile(String inputFile) throws ParserConfigurationException, TransformerException, IOException, SAXException {
         File fXmlFile = new File(inputFile);
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        System.out.println("XML File parsed.");
         return dBuilder.parse(fXmlFile);
     }
 }
