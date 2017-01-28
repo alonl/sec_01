@@ -11,7 +11,7 @@ import java.io.*;
 import java.security.*;
 import java.security.cert.CertificateException;
 
-import static org.shayalon.utils.AppConfig.*;
+import static org.shayalon.config.AppConfig.*;
 
 
 public class EncTools {

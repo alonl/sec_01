@@ -1,4 +1,4 @@
-package org.shayalon.utils;
+package org.shayalon.config;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
