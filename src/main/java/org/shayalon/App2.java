@@ -11,7 +11,7 @@ import java.io.IOException;
 public class App2 {
     public static void main(String[] args) {
         try {
-            Configuration x = Configuration.fromXml(XmlTools.readFile("output/config.xml"));
+            Configuration x = Configuration.fromXml(XmlTools.readFile("output/config3.xml"));
             System.out.println(x);
         } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
             e.printStackTrace();

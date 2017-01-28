@@ -20,7 +20,6 @@ public class EncTools {
 
         String clearTextFile = "input/plaintext.txt";
         String cipherTextFile = "output/plaintext.txt.enc";
-        String configurationFile = "config.xml";
 
         String cryptAlgo = "AES";
         String signatureAlgo = "SHA1withRSA";
