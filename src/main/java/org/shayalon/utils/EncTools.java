@@ -42,7 +42,7 @@ public class EncTools {
 
         PublicKey publicKey = getPublicKeyFromKeystore(keyStore, publicKeyAlias);
 
-        byte[] encryptedSecretKey = encryptSecretKey(asymmetricCipherAlgo, publicKey, secretKey);
+        byte[] encryptedSecretKey = encryptBuffer(asymmetricCipherAlgo, publicKey, secretKey.getEncoded());
         byte[] fileSignature = signature.sign();
         return new Configuration(fileSignature, encryptedSecretKey, cipher.getIV());
     }
@@ -66,12 +66,13 @@ public class EncTools {
 
         byte[] signatureBuffer = configuration.getSignature();
         byte[] encryptedSecretKey = configuration.getEncryptedSecretKey();
-        byte[] iv = configuration.getIv();
+        byte[] iv = configuration.getEncryptedIv();
 
         KeyStore keyStore = getKeystore(keystoreName, keystorePassword);
         PrivateKey privateKey = getPrivateKeyFromKeystore(keyStore, keyAlias, keyPassword);
 
-        SecretKey secretKey = decryptSecretKey(asymmetricCipherAlgo, privateKey, cryptAlgo, encryptedSecretKey);
+        byte[] decryptedSecretKeyBuffer = decryptBuffer(asymmetricCipherAlgo, privateKey, encryptedSecretKey);
+        SecretKey secretKey = new SecretKeySpec(decryptedSecretKeyBuffer, cryptAlgo);
         Cipher cipher = createDecryptCipher(symmetricCipherAlgo, Cipher.DECRYPT_MODE, secretKey, iv);
 
         PublicKey publicKey = getPublicKeyFromKeystore(keyStore, publicKeyAlias);
@@ -192,17 +193,16 @@ public class EncTools {
 
 
 
-    private byte[] encryptSecretKey(String cipherAlgo, PublicKey publicKey, SecretKey secretKey) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
+    private byte[] encryptBuffer(String cipherAlgo, PublicKey publicKey, byte[] buffer) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance(cipherAlgo);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        return cipher.doFinal(secretKey.getEncoded());
+        return cipher.doFinal(buffer);
     }
 
-    private SecretKey decryptSecretKey(String cipherAlgo, PrivateKey privateKey, String cryptAlgo, byte[] encryptedSecretKey) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
+    private byte[] decryptBuffer(String cipherAlgo, PrivateKey privateKey, byte[] encryptedSecretKey) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance(cipherAlgo);
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        byte[] decryptedSecretKeyBuffer = cipher.doFinal(encryptedSecretKey);
-        return new SecretKeySpec(decryptedSecretKeyBuffer, cryptAlgo);
+        return cipher.doFinal(encryptedSecretKey);
     }
 
 }

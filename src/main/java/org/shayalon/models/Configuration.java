@@ -14,11 +14,11 @@ public class Configuration {
 
     private byte[] signature;
     private byte[] encryptedSecretKey;
-    private final byte[] iv;
+    private final byte[] encryptedIv;
 
     private static final String SIGNATURE = "signature";
     private static final String ENCRYPTED_SECRET_KEY = "encryptedSecretKey";
-    private static final String IV = "iv";
+    private static final String ENCRYPTED_IV = "encryptedIv";
 
     public static Configuration fromXml(Document doc) throws ParserConfigurationException, IOException, SAXException, TransformerException {
         Element root = doc.getDocumentElement();
@@ -26,7 +26,7 @@ public class Configuration {
 
         String base64Signature = root.getElementsByTagName(SIGNATURE).item(0).getTextContent();
         String base64EncryptedSecretKey = root.getElementsByTagName(ENCRYPTED_SECRET_KEY).item(0).getTextContent();
-        String base64Iv = root.getElementsByTagName(IV).item(0).getTextContent();
+        String base64Iv = root.getElementsByTagName(ENCRYPTED_IV).item(0).getTextContent();
 
         byte[] signature = Base64.getDecoder().decode(base64Signature);
         byte[] encryptedSecretKey = Base64.getDecoder().decode(base64EncryptedSecretKey);
@@ -38,7 +38,7 @@ public class Configuration {
     public Document toXml() throws ParserConfigurationException {
         String base64Signature = Base64.getEncoder().encodeToString(signature);
         String base64EncryptedSecretKey = Base64.getEncoder().encodeToString(encryptedSecretKey);
-        String base64Iv = Base64.getEncoder().encodeToString(iv);
+        String base64Iv = Base64.getEncoder().encodeToString(encryptedIv);
 
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         Element rootElement = doc.createElement(this.getClass().getSimpleName());
@@ -52,17 +52,17 @@ public class Configuration {
         secretKeyElem.appendChild(doc.createTextNode(base64EncryptedSecretKey));
         rootElement.appendChild(secretKeyElem);
 
-        Element ivElem = doc.createElement(IV);
+        Element ivElem = doc.createElement(ENCRYPTED_IV);
         ivElem.appendChild(doc.createTextNode(base64Iv));
         rootElement.appendChild(ivElem);
 
         return doc;
     }
 
-    public Configuration(byte[] signature, byte[] encryptedSecretKey, byte[] iv) {
+    public Configuration(byte[] signature, byte[] encryptedSecretKey, byte[] encryptedIv) {
         this.signature = signature;
         this.encryptedSecretKey = encryptedSecretKey;
-        this.iv = iv;
+        this.encryptedIv = encryptedIv;
     }
 
     public byte[] getSignature() {
@@ -73,8 +73,8 @@ public class Configuration {
         return encryptedSecretKey;
     }
 
-    public byte[] getIv() {
-        return iv;
+    public byte[] getEncryptedIv() {
+        return encryptedIv;
     }
 
     @Override
